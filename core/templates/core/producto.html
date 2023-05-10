@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+
+<head>
+    <title>Productos</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jgp" href="{% static 'core/img/Icono.png' %}" alt="Icono pestaña">
+    <!-- Css -->
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/estilos.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/ventacomp.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+</head>
+
+<body>
+
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-dark " style="background: #4f8ba7;  ">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img style="height: 50px;width: 140px;" src="{% static 'core/img/logoHome.png' %}"
+                    class="d-inline-block align-top" alt="">
+                {% if user.is_staff %}
+                <a style="color:white;">Farmaceutico: {{ user.first_name }} {{ user.last_name }}</a>
+                {% else %}
+                <a style="color:white;">Medico: {{ user.first_name }} {{ user.last_name }}</a>
+                {% endif %}
+            </a>
+
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav nav">
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'home' %}">Menu Principal<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'producto' %}">Productos<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% if user.is_authenticated and user.is_staff %}
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'crearProducto' %}">Crear producto <span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'reg_prescripcion' %}">Registrar prescripciones<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+            <a slot="end" class="btn btn-danger clogse" href="{% url 'logout' %}"
+                style="color:rgb(255, 255, 255); ; ">Cerrar
+                sesión</a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <div class="container" style="margin-top: 30px; margin-bottom: 30px;">
+        <center>
+            <div class="row">
+                {% for x in hab %}
+                <div class="col-md separaciones_articulos">
+                    <div class="card text-center" style="width: 450px; height: 400;background: #4f8ba7  !important;">
+                        <img src="{{ x.imagen.url }}" class="card-img-top" style="height: 300px;" alt="">
+                        <div class="card-body" style="text-align: center; color: white;">
+                            <h4 class="card-title"style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">{{ x.nombre }}</h4>
+                            <p class="card-text"style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Precio: {{ x.precio }} </p>
+                            <p class="card-text"style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Stock: {{ x.stock }} </p>
+                            <p class="card-text"style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Descripción: {{ x.descripcion }} </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </center>
+    </div>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% if messages %}
+    {% for m in messages %}
+    <script>
+        Swal.fire({
+            "title": "Producto creado",
+            "text": "{{m}}",
+            "icon": "success",
+            "confirmButtonColor": "#007bff",
+            "confirmButtonText": "Salir"
+        })
+    </script>
+    {% endfor %}
+    {% endif %}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+        crossorigin="anonymous"></script>
+
+
+
+
+</body>
+
+</html>

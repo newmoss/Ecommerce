@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión || Regístrese desde</title>
+    <!-- font awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- css stylesheet -->
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/loginregister.css' %}">
+</head>
+
+<body>
+
+    <div class="container" id="container">
+
+        <div class="form-container sign-up-container">
+            <form method="POST" class="form" action="{% url 'registrar' %}">
+                {% csrf_token %}
+                <h1>Crear una cuenta</h1>
+                <span>use su correo electrónico de la institución</span>
+                <div class="infield">
+                    <input type="text" placeholder="Nombre" id="nombres" name="nombres">
+                    <label></label>
+                </div>
+                <div class="infield">
+                    <input type="email" placeholder="Email" id="email" name="email">
+                    <label></label>
+                </div>
+                <div class="infield">
+                    <input type="password" placeholder="Contraseña" id="password1" nname="password1">
+                    <label></label>
+                </div>
+                <div class="infield">
+                    <input type="password" id="repassword" nname="repassword"placeholder="Repetir Contraseña">
+                    <label></label>
+                </div>
+                <button type="submit">Inscribirse</button>
+            </form>
+        </div>
+
+        <div class="form-container sign-in-container">
+            <form method="POST" class="form" action="{% url 'sesion' %}">
+                {% csrf_token %}
+                <h1>Iniciar sesión</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>o usa tu cuenta</span>
+                <div class="infield">
+                    <input type="text" placeholder="Email" id="username" name="username">
+                    <label></label>
+                </div>
+                <div class="infield">
+                    <input type="password" placeholder="Contraseña" id="password" name="password">
+                    <label></label>
+                </div>
+                <a href="#" class="forgot">¿Olvidaste tu contraseña?</a>
+                <button type="submit">Iniciar sesión</button>
+            </form>
+        </div>
+
+        <div class="overlay-container" id="overlayCon">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Bienvenido!</h1>
+                    <p>inicie sesión con su información personal</p>
+                    <button>Iniciar sesión</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hola, Amigo!</h1>
+                    <p>Ingresa tus datos personales y comienza tu viaje con nosotros</p>
+                    <button>Inscribirse</button>
+                </div>
+            </div>
+            <button id="overlayBtn"></button>
+        </div>
+    </div>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- js code -->
+    <script>
+        const container = document.getElementById('container');
+        const overlayCon = document.getElementById('overlayCon');
+        const overlayBtn = document.getElementById('overlayBtn');
+
+        overlayBtn.addEventListener('click', () => {
+            container.classList.toggle('right-panel-active');
+
+            overlayBtn.classList.remove('btnScaled');
+            window.requestAnimationFrame(() => {
+                overlayBtn.classList.add('btnScaled');
+            })
+        });
+    </script>
+    {% if messages %}
+    {% for m in messages %}
+    <script>
+        Swal.fire({
+            "title": "Cuenta creada",
+            "text": "{{m}}",
+            "icon": "info",
+            "confirmButtonColor": "#007bff",
+            "confirmButtonText": "Salir"
+        })
+    </script>
+    {% endfor %}
+    {% endif %}
+</body>
+
+</html>
+

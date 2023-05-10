@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <title>Registrar medicamento</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Css -->
+    <link rel="icon" type="image/jgp" href="{% static 'core/img/Icono.png' %}" alt="Icono pestaña">
+
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <!-- Boostrap -->
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+
+</head>
+
+<body>
+
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-dark " style="background: #4f8ba7;  ">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img style="height: 50px;width: 140px;" src="{% static 'core/img/logoHome.png' %}"
+                    class="d-inline-block align-top" alt="">
+                {% if user.is_staff %}
+                <a style="color:white;">Farmaceutico: {{ user.first_name }} {{ user.last_name }}</a>
+                {% else %}
+                <a style="color:white;">Medico: {{ user.first_name }} {{ user.last_name }}</a>
+                {% endif %}
+            </a>
+
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav nav">
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'home' %}">Menu Principal<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'producto' %}">Productos<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% if user.is_authenticated and user.is_staff %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'crearProducto' %}">Crear producto <span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'reg_prescripcion' %}">Registrar prescripciones<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+            <a slot="end" class="btn btn-danger clogse" href="{% url 'logout' %}"
+                style="color:rgb(255, 255, 255); ; ">Cerrar
+                sesión</a>
+            {% endif %}
+        </nav>
+    </div>
+    {% if user.is_staff %}
+    <!-- Formulario -->
+    <form action="{% url 'registrar_producto' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <section class="form-register">
+            <h4 align=center>Registrar producto</h4>
+            <input class="controls" type="text" name="nombre" id="nombre" placeholder="Nombre" required>
+            <input class="controls" type="number" name="precio" id="precio" placeholder="precio" required>
+            <input class="controls" type="number" name="stock" id="stock" placeholder="stock" required>
+            <input class="controls" type="text" name="descripcion" id="descripcion" placeholder="Descripción" required>
+            <label for="">Imagen del producto:</label>
+            <input class="controls" type="file" name="image" id="image">
+
+            <input class="botons" type="reset" value="Limpiar campos">
+            <input class="botons" type="submit" value="Registrar">
+    </form>
+    {% endif %}
+
+</body>
+
+</html>

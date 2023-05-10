@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+
+<body>
+    <table>
+        <tr>
+            <td>
+                <p>Hola {{ men.nombreApe }} buenas noticias, ya se encuentra disponible {{ men.medicamento }} que necesitabas.</p>
+                <p>Puedes acercarte al area de farmacia del cesfam para retirar, te esperamos!</p>
+                
+
+                <h2>Información del paciente</h2>
+                    <p>Tu correo: {{ men.email }}</p>
+                    <p>Telefono: {{ men.telefono }}</p>        
+                    <p>Medicamento reservado: {{ men.medicamento }}</p>
+                    <p>Unidades disponible: {{ men.cantidad }}</p>                                
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
