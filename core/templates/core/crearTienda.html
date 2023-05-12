@@ -72,16 +72,15 @@
     </div>
     {% if user.is_staff %}
     <!-- Formulario -->
-    <form action="{% url 'registrar_producto' %}" method="POST" enctype="multipart/form-data">
+    <form action="{% url 'registrar_tienda' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <section class="form-register">
-            <h4 align=center>Registrar producto</h4>
+            <h4 align=center>Registrar tienda</h4>
+
             <input class="controls" type="text" name="nombre" id="nombre" placeholder="Nombre" required>
-            <input class="controls" type="number" name="precio" id="precio" placeholder="precio" required>
-            <input class="controls" type="text" name="descripcion" id="descripcion" placeholder="Descripción" required>
-            <label for="">Imagen del producto:</label>
-            <input class="controls" type="file" name="image" id="image">
-            
+            <input class="controls" type="text" name="direccion" id="direccion" placeholder="direccion" required>
+
+
             <input class="botons" type="reset" value="Limpiar campos">
             <input class="botons" type="submit" value="Registrar">
     </form>

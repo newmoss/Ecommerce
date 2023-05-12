@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'evaluacion_3.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cesfam',
+        'NAME': 'Inventario',
         'USER': 'root',
         'PASSWORD': '1234',
         'HOST': '127.0.0.1',

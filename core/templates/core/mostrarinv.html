@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 {% load static %}
 
 <head>
-    <title>Registrar medicamento</title>
+    <title>Menu</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Css -->
     <link rel="icon" type="image/jgp" href="{% static 'core/img/Icono.png' %}" alt="Icono pestaña">
 
-    <link type="text/css" rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <!-- Css -->
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/estilos.css' %}">
     <!-- Boostrap -->
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
 
@@ -30,6 +30,7 @@
                 {% endif %}
             </a>
 
+
             <div class="container">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +47,7 @@
                                     class="sr-only">(current)</span></a>
                         </li>
                         {% if user.is_authenticated and user.is_staff %}
-                        <li class="nav-item active">
+                        <li class="nav-item ">
                             <a class="nav-link" href="{% url 'crearProducto' %}">Crear producto <span
                                     class="sr-only">(current)</span></a>
                         </li>
@@ -56,7 +57,7 @@
                                     class="sr-only">(current)</span></a>
                         </li>
                         {% endif %}
-                        <li class="nav-item">
+                        <li class="nav-item active">
                             <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
                         </li>
 
@@ -70,23 +71,57 @@
             {% endif %}
         </nav>
     </div>
-    {% if user.is_staff %}
-    <!-- Formulario -->
-    <form action="{% url 'registrar_producto' %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <section class="form-register">
-            <h4 align=center>Registrar producto</h4>
-            <input class="controls" type="text" name="nombre" id="nombre" placeholder="Nombre" required>
-            <input class="controls" type="number" name="precio" id="precio" placeholder="precio" required>
-            <input class="controls" type="text" name="descripcion" id="descripcion" placeholder="Descripción" required>
-            <label for="">Imagen del producto:</label>
-            <input class="controls" type="file" name="image" id="image">
-            
-            <input class="botons" type="reset" value="Limpiar campos">
-            <input class="botons" type="submit" value="Registrar">
-    </form>
-    {% endif %}
 
-</body>
+    <body>
+        <div class="container" style="margin-top: 30px;">
+
+            <h1>Productos del inventario</h1>
+            <form method="GET">
+                <label for="inventario_id">Seleccione un inventario:</label>
+                <select name="inventario_id" id="inventario_id">
+                    <!-- Aquí puedes iterar sobre todos los inventarios disponibles y generar las opciones del menú desplegable -->
+                    {% for x in inv %}
+                    <option value="{{ x.idInventario }}">{{ x.inventario }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="Mostrar productos">
+            </form>
+        </div>
+        <!-- {% if filtro %}
+        <h2>Productos:</h2>
+        <ul>
+            Iterar sobre los productos y mostrar su información
+            {% for x in filtro %}
+                <li>Producto:{{ x.productoId.nombre }} Stock:{{ x.stock }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay productos disponibles para el inventario seleccionado.</p>
+    {% endif %} -->
+        <div class="container" style="margin-top: 30px;">
+            <div class="form-group table-responsive " style="margin-top: 30px;">
+                <table class="table table-striped">
+                    <H1 class="centrado">Listado de inventario</H1>
+
+                    <tr style="text-align: center;">
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Imagen</th>
+
+                    </tr>
+                    {% for x in filtro %}
+                    <td>{{ x.productoId.nombre }}</td>
+                    <td>{{ x.stock }}</td>
+                    <td>{{ x.productoId.descripcion}}</td>
+                    <td>{{ x.productoId.precio }}</td>
+                    <td><img src="{{ x.productoId.imagen.url }}" style="width: 70px;max-width: 70px;" alt=""></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </body>
 
 </html>

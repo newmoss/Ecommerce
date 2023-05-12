@@ -72,16 +72,28 @@
     </div>
     {% if user.is_staff %}
     <!-- Formulario -->
-    <form action="{% url 'registrar_producto' %}" method="POST" enctype="multipart/form-data">
+    <form action="{% url 'registrar_stock' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <section class="form-register">
-            <h4 align=center>Registrar producto</h4>
-            <input class="controls" type="text" name="nombre" id="nombre" placeholder="Nombre" required>
-            <input class="controls" type="number" name="precio" id="precio" placeholder="precio" required>
-            <input class="controls" type="text" name="descripcion" id="descripcion" placeholder="Descripción" required>
-            <label for="">Imagen del producto:</label>
-            <input class="controls" type="file" name="image" id="image">
-            
+            <h4 align=center>Registrar tienda</h4>
+            <div class="control"s>
+                <label>Inventario: </label>
+                <select class="controls" name="inv" id="inv">
+                    {% for x in inv %}
+                    <option value="{{ x.idInventario }}">{{ x.inventario }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="control"s>
+                <label>Producto: </label>
+                <select class="controls" name="pro" id="pro">
+                    {% for x in pro %}
+                    <option value="{{ x.idProducto }}">{{ x.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input class="controls" type="text" name="stock" id="stock" placeholder="cantidad" required>
+
             <input class="botons" type="reset" value="Limpiar campos">
             <input class="botons" type="submit" value="Registrar">
     </form>

@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Producto, Motivo, Mensajeria
+from .models import Tienda,Producto, Motivo, Mensajeria,Inventario,Inventario_producto
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+from django.shortcuts import get_object_or_404
 
 import requests
 import matplotlib.pyplot as plt
@@ -31,7 +32,21 @@ def home(request):
     #plt.xticks(range(len(nombres)), nombres, rotation=90)
 #
     #html_graph = mpld3.fig_to_html(plt.gcf())
-    return render(request, 'core/home.html')#, {'html_graph': html_graph})
+    inv = Inventario.objects.all()
+    inventario_id = request.GET.get('inventario_id')  # Obtener el ID del inventario seleccionado
+
+    # Obtener el inventario correspondiente al ID proporcionado
+    # Obtener los productos relacionados con el inventario seleccionado
+    filtro = Inventario_producto.objects.filter(inventarioId_id=inventario_id)
+
+    # Obtener los IDs de producto asociados al filtro
+    producto_ids = filtro.values_list('productoId_id', flat=True)
+
+    # Obtener los datos de producto filtrando por los IDs obtenidos
+    datosproducto = Producto.objects.filter(idProducto__in=producto_ids)
+
+    return render(request, 'core/home.html', {'filtro': filtro, 'inv': inv, 'producto':datosproducto})
+
 
 
 def producto(request):
@@ -39,12 +54,40 @@ def producto(request):
     contexto = {"hab": hab}
     return render(request, 'core/producto.html', contexto)
 
+def tiendas(request):
+    hab = Tienda.objects.all
+    contexto = {"hab": hab}
+    return render(request, 'core/tiendas.html', contexto)
+
 
 def crearProducto(request):
     return render(request, 'core/crearProducto.html')
 
+def crearTienda(request):
+    return render(request, 'core/crearTienda.html')
 
-# Listado
+def stock(request):
+    pro = Producto.objects.all()
+    inv = Inventario.objects.all()
+    contexto = {"pro":pro,"inv":inv}
+    return render(request, 'core/stock.html',contexto)
+
+def mostrar_productos(request):
+    inv = Inventario.objects.all()
+    inventario_id = request.GET.get('inventario_id')  # Obtener el ID del inventario seleccionado
+
+    # Obtener el inventario correspondiente al ID proporcionado
+    # Obtener los productos relacionados con el inventario seleccionado
+    filtro = Inventario_producto.objects.filter(inventarioId_id=inventario_id)
+
+    # Obtener los IDs de producto asociados al filtro
+    producto_ids = filtro.values_list('productoId_id', flat=True)
+
+    # Obtener los datos de producto filtrando por los IDs obtenidos
+    datosproducto = Producto.objects.filter(idProducto__in=producto_ids)
+
+    return render(request, 'core/mostrarinv.html', {'filtro': filtro, 'inv': inv, 'producto':datosproducto})
+
 
 def menu(request):
     #us = Prescripcion.objects.all()
@@ -82,7 +125,6 @@ def registrarUsuario(request):
 
 def registrar_producto(request):
     nom = request.POST['nombre']
-    sto = request.POST['stock']
     pre = request.POST['precio']
     des = request.POST['descripcion']
     if request.FILES.get('image') == None:
@@ -90,9 +132,40 @@ def registrar_producto(request):
     else:
         imagen_m = request.FILES['image']
 
-    Producto.objects.create(nombre=nom, precio=pre, descripcion=des,stock=sto, imagen=imagen_m, )
+    Producto.objects.create(nombre=nom, precio=pre, descripcion=des, imagen=imagen_m, )
     messages.success(request, 'El producto ' + nom + ' se registro existosamente!')
     return redirect('producto')
+
+def registrar_tienda(request):
+    nom = request.POST['nombre']
+    dire = request.POST['direccion']
+
+    Tienda.objects.create(nombreTienda=nom,direccion=dire)
+    tienda = Tienda.objects.all()
+    Inventario.objects.create(tienda_id = tienda.idTienda)
+
+    messages.success(request, 'La tienda' + nom + ' se registro existosamente!')
+    return redirect('tiendas')
+
+def registrar_stock(request):
+    inv = request.POST['inv']
+    pro = request.POST['pro']
+    sto = int(request.POST['stock'])  # Asegúrate de convertir el stock a un número entero
+
+    try:
+        # Verificar si ya existe una entrada en la base de datos con los mismos IDs
+        inventario_producto = Inventario_producto.objects.get(inventarioId_id=inv, productoId_id=pro)
+        inventario_producto.stock += sto  # Sumar el stock existente con el nuevo stock
+        inventario_producto.save()
+        messages.success(request, 'Se registró el stock existosamente!')
+    except Inventario_producto.DoesNotExist:
+        # No existe una entrada con los mismos IDs, crear una nueva
+        Inventario_producto.objects.create(stock=sto, inventarioId_id=inv, productoId_id=pro)
+        messages.success(request, 'Se registró el stock existosamente!')
+
+    return redirect('home')
+
+
 
 
 # Eliminar
