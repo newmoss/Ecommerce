@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Tienda,Producto, Motivo, Mensajeria,Inventario,Inventario_producto
+from .models import Tienda,Producto, Motivo, Mensajeria,Inventario,Inventario_producto,Usuario
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
@@ -12,7 +12,6 @@ from django.shortcuts import get_object_or_404
 import requests
 import matplotlib.pyplot as plt
 import matplotlib.pyplot as pltt
-
 import mpld3
 
 # Create your views here.
@@ -47,24 +46,10 @@ def home(request):
 
     return render(request, 'core/home.html', {'filtro': filtro, 'inv': inv, 'producto':datosproducto})
 
-
-
 def producto(request):
-    hab = Producto.objects.all
-    contexto = {"hab": hab}
+    pro = Producto.objects.all
+    contexto = {"pro": pro}
     return render(request, 'core/producto.html', contexto)
-
-def tiendas(request):
-    hab = Tienda.objects.all
-    contexto = {"hab": hab}
-    return render(request, 'core/tiendas.html', contexto)
-
-
-def crearProducto(request):
-    return render(request, 'core/crearProducto.html')
-
-def crearTienda(request):
-    return render(request, 'core/crearTienda.html')
 
 def stock(request):
     pro = Producto.objects.all()
@@ -72,21 +57,21 @@ def stock(request):
     contexto = {"pro":pro,"inv":inv}
     return render(request, 'core/stock.html',contexto)
 
-def mostrar_productos(request):
+def tiendas(request):
+    tie = Tienda.objects.all
+    contexto = {"tie": tie}
+    return render(request, 'core/tiendas.html', contexto)
+
+def crearProducto(request):
+    return render(request, 'core/crearProducto.html')
+
+def crearTienda(request):
+    return render(request, 'core/crearTienda.html')
+
+def crearUsuario(request):
     inv = Inventario.objects.all()
-    inventario_id = request.GET.get('inventario_id')  # Obtener el ID del inventario seleccionado
+    return render(request, 'core/crearUsuario.html', {'inv':inv})
 
-    # Obtener el inventario correspondiente al ID proporcionado
-    # Obtener los productos relacionados con el inventario seleccionado
-    filtro = Inventario_producto.objects.filter(inventarioId_id=inventario_id)
-
-    # Obtener los IDs de producto asociados al filtro
-    producto_ids = filtro.values_list('productoId_id', flat=True)
-
-    # Obtener los datos de producto filtrando por los IDs obtenidos
-    datosproducto = Producto.objects.filter(idProducto__in=producto_ids)
-
-    return render(request, 'core/mostrarinv.html', {'filtro': filtro, 'inv': inv, 'producto':datosproducto})
 
 
 def menu(request):
@@ -94,7 +79,7 @@ def menu(request):
     #cad = Caducar.objects.all()
     #mes = Mensajeria.objects.all()
     hab = Producto.objects.all()
-
+    usu = Usuario.objects.all()
     # WEB SERVICES GET
     #response = requests.get('http://127.0.0.1:8000/api/listamed')
     respon = requests.get('http://127.0.0.1:8000/api/listamen')
@@ -104,24 +89,28 @@ def menu(request):
     mes = respon.json()
     cad = resp.json()
 
-    contexto = {"hab": hab, "cad": cad, "mes": mes}
+    contexto = {"hab": hab, "cad": cad, "mes": mes, "usu":usu}
     return render(request, 'core/menu.html', contexto)
 
 
 # Registrar
-def registrarUsuario(request):
-    nombres = request.POST['nombres']
-    email = request.POST['email']
-    password = request.POST['password1']
-    print(nombres,email,password)
-    if nombres and email and password:
-        User.objects.create_user(username=nombres, first_name=nombres, is_staff=0, is_active=1, email=email, password=make_password(password))
-        messages.success(request, 'Usuario creado exitosamente!')
-        return redirect('home')
-    else:
-        messages.error(request, 'Error al crear el usuario. Por favor, completa todos los campos.')
-        return redirect('login')
+def registrar_usuario(request):
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        apellido = request.POST['apellido']
+        email = request.POST['email']
+        inv = request.POST['inv']
+        passw = request.POST.get('password')
+        repassw = request.POST['confirmpassword']
 
+        user = User.objects.create_user(username=email, first_name=nombre, is_superuser=1, is_staff=0, is_active=1, email=email, password=passw)
+        user.set_password(passw)
+        usuario = Usuario.objects.create(nombres=nombre, apellidos=apellido, email=email, inventarioId_id=inv)
+
+        messages.success(request, 'Usuario creado exitosamente!')
+        return redirect('menu')
+    else:
+        return render(request, 'crearUsuario.html')
 
 def registrar_producto(request):
     nom = request.POST['nombre']
@@ -140,12 +129,13 @@ def registrar_tienda(request):
     nom = request.POST['nombre']
     dire = request.POST['direccion']
 
-    Tienda.objects.create(nombreTienda=nom,direccion=dire)
-    tienda = Tienda.objects.all()
-    Inventario.objects.create(tienda_id = tienda.idTienda)
-
-    messages.success(request, 'La tienda' + nom + ' se registro existosamente!')
+    tienda = Tienda.objects.create(nombreTienda=nom, direccion=dire)
+    
+    Inventario.objects.create(tienda=tienda, inventario=nom)
+    
+    messages.success(request, f'La tienda {nom} se registró exitosamente!')
     return redirect('tiendas')
+
 
 def registrar_stock(request):
     inv = request.POST['inv']
@@ -264,21 +254,22 @@ def modificar(request):
 # LOGIN_________________________________________________________________________________________________
 
 def login_view(request):
-    u = request.POST['username']
-    c = request.POST['password']
-    print(u)
-    print(c)
-    user = authenticate(username=u, password=c)
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
 
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            return redirect('home')
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request, 'Usuario Inactivo')
         else:
-            messages.error(request, 'Usuario Inactivo')
+            messages.error(request, 'Usuario y/o contraseña incorrecta')
+        return redirect('login')
     else:
-        messages.error(request, 'Usuario y/o contraseña incorrecta')
-    return redirect('login')
+        return render(request, 'login.html')
 
 # LOGOUT
 

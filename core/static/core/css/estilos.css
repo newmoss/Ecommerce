@@ -78,8 +78,7 @@
 }
 
 * {
-
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 th{
     margin-right: 5px;

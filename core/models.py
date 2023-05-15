@@ -27,6 +27,18 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+class Usuario(models.Model):
+    idUsuario = models.AutoField(primary_key=True)
+    nombres = models.CharField(max_length=50)
+    apellidos = models.CharField(max_length=50)
+    email = models.CharField(max_length=50)
+    password = models.CharField(max_length=50)
+    inventarioId =  models.ForeignKey(Inventario, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.nombres
+
 
 class Inventario_producto(models.Model):
     inventarioId =  models.ForeignKey(Inventario, on_delete=models.CASCADE, null=True)

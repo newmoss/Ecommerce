@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar usuario</title>
+    <!-- font awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- css stylesheet -->
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/newuser.css' %}">
+    <!-- Css -->
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/estilos.css' %}">
+    <!-- Boostrap -->
+    <link type="text/css" rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #000;">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <img style="height: 100px;width: 150px;" src="{% static 'core/img/logoHome.png' %}"
+                class="d-inline-block align-top" alt="">
+            {% if user.is_staff %}
+            <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
+            {% else %}
+            <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
+            {% endif %}
+        </a>
+
+
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav nav">
+                    {% if user.is_authenticated and user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Inventarios<span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'producto' %}">Productos<span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span class="sr-only">(current)</span></a>
+                    </li>
+
+                    {% else %}
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'reg_prescripcion' %}">Registrar prescripciones<span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span class="sr-only">(current)</span></a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <a slot="end" class="btn btn-danger clogse" href="{% url 'logout' %}"
+            style="color:rgb(255, 255, 255); ; ">Cerrar
+            sesión</a>
+        {% endif %}
+    </nav>
+
+
+    <div class="contenedor">
+        <form method="POST" class="form" action="{% url 'registrar_usuario' %}">
+            {% csrf_token %}
+            <h1>Crear una cuenta</h1>
+            <span>use su correo electrónico de la institución</span>
+            <div class="infield">
+                <input type="text" placeholder="Nombre" id="nombre" name="nombre" required>
+                <label></label>
+            </div>
+            <div class="infield">
+                <input type="text" placeholder="Apellido" id="apellido" name="apellido" required>
+                <label></label>
+            </div>
+            <div class="infield">
+                <input type="email" placeholder="Email" id="email" name="email" required>
+                <label></label>
+            </div>
+            <div class="control">
+                <label>Inventario:</label>
+                <select class="controls" name="inv" id="inv" required>
+                    {% for x in inv %}
+                    <option value="{{ x.idInventario }}">{{ x.inventario }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="infield">
+                <input type="password" placeholder="Contraseña" id="password" nname="password" required>
+                <label></label>
+            </div>
+            <div class="infield">
+                <input type="password" id="confirmpassword" name="confirmpassword" placeholder="Repetir Contraseña" required>
+                <label></label>
+            </div>
+            <button type="submit">Crear usuario</button>
+        </form>
+    </div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- js code -->
+    <script>
+        const container = document.getElementById('container');
+        const overlayCon = document.getElementById('overlayCon');
+        const overlayBtn = document.getElementById('overlayBtn');
+
+        overlayBtn.addEventListener('click', () => {
+            container.classList.toggle('right-panel-active');
+
+            overlayBtn.classList.remove('btnScaled');
+            window.requestAnimationFrame(() => {
+                overlayBtn.classList.add('btnScaled');
+            })
+        });
+    </script>
+    {% if messages %}
+    {% for m in messages %}
+    <script>
+        Swal.fire({
+            "title": "Cuenta creada",
+            "text": "{{m}}",
+            "icon": "info",
+            "confirmButtonColor": "#007bff",
+            "confirmButtonText": "Salir"
+        })
+    </script>
+    {% endfor %}
+    {% endif %}
+</body>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+    crossorigin="anonymous"></script>
+
+</html>

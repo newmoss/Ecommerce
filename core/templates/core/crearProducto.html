@@ -19,15 +19,15 @@
 <body>
 
     <div>
-        <nav class="navbar navbar-expand-lg navbar-dark " style="background: #4f8ba7;  ">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background: #000;">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <img style="height: 50px;width: 140px;" src="{% static 'core/img/logoHome.png' %}"
+                <img style="height: 100px;width: 150px;" src="{% static 'core/img/logoHome.png' %}"
                     class="d-inline-block align-top" alt="">
-                {% if user.is_staff %}
-                <a style="color:white;">Farmaceutico: {{ user.first_name }} {{ user.last_name }}</a>
-                {% else %}
-                <a style="color:white;">Medico: {{ user.first_name }} {{ user.last_name }}</a>
-                {% endif %}
+                    {% if user.is_staff %}
+                    <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
+                    {% else %}
+                    <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
+                    {% endif %}
             </a>
 
             <div class="container">
@@ -37,22 +37,27 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav nav">
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'home' %}">Menu Principal<span
+                        {% if user.is_authenticated and user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Inventarios<span
                                     class="sr-only">(current)</span></a>
                         </li>
                         <li class="nav-item ">
                             <a class="nav-link" href="{% url 'producto' %}">Productos<span
                                     class="sr-only">(current)</span></a>
                         </li>
-                        {% if user.is_authenticated and user.is_staff %}
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{% url 'crearProducto' %}">Crear producto <span
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
                                     class="sr-only">(current)</span></a>
                         </li>
+                        
                         {% else %}
                         <li class="nav-item ">
                             <a class="nav-link" href="{% url 'reg_prescripcion' %}">Registrar prescripciones<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
                                     class="sr-only">(current)</span></a>
                         </li>
                         {% endif %}
