@@ -89,9 +89,24 @@ def menu(request):
     mes = respon.json()
     cad = resp.json()
 
+    inventario = Inventario_producto.objects.all()
+
+    # Procesar los datos para generar el gráfico
+    tiendas = [item.productoId_id for item in inventario]
+    stock = [item.stock for item in inventario]
+
+    # Generar el gráfico de barras
+    plt.bar(tiendas, stock)
+    plt.xlabel('Tienda')
+    plt.ylabel('Stock')
+    plt.title('Inventario de Tiendas')
+    plt.xticks(tiendas)  # Configurar etiquetas en el eje X
+
+    # Guardar el gráfico en un archivo temporal
+    plt.savefig('/img/grafico.png')
+
     contexto = {"hab": hab, "cad": cad, "mes": mes, "usu":usu}
     return render(request, 'core/menu.html', contexto)
-
 
 # Registrar
 def registrar_usuario(request):
