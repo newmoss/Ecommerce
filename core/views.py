@@ -90,7 +90,6 @@ def menu(request):
     cad = resp.json()
 
     inventario = Inventario_producto.objects.all()
-
     # Procesar los datos para generar el gráfico
     tiendas = [item.productoId_id for item in inventario]
     stock = [item.stock for item in inventario]
@@ -103,7 +102,7 @@ def menu(request):
     plt.xticks(tiendas)  # Configurar etiquetas en el eje X
 
     # Guardar el gráfico en un archivo temporal
-    plt.savefig('/img/grafico.png')
+    plt.savefig('../grafico.png')
 
     contexto = {"hab": hab, "cad": cad, "mes": mes, "usu":usu}
     return render(request, 'core/menu.html', contexto)
