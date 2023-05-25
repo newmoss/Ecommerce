@@ -18,7 +18,6 @@ import mpld3
 
 # Home
 def home(request):
-
     inv = Inventario.objects.all()
     inventario_id = request.GET.get('inventario_id')  # Obtener el ID del inventario seleccionado
     filtro = Inventario_producto.objects.filter(inventarioId_id=inventario_id)
@@ -26,7 +25,10 @@ def home(request):
     producto_ids = filtro.values_list('productoId_id', flat=True)
     # Obtener los datos de producto filtrando por los IDs obtenidos
     datosproducto = Producto.objects.filter(idProducto__in=producto_ids)
-    return render(request, 'core/home.html', {'filtro': filtro, 'inv': inv, 'producto':datosproducto})
+    usuario = Usuario.objects.all()
+    invpro= Inventario_producto.objects.all()
+    producto= Producto.objects.all()
+    return render(request, 'core/home.html', {'filtro': filtro, 'inv': inv, 'producto':datosproducto,"us":usuario,"in":invpro,"producto":producto})
 
 def producto(request):
     producto = Producto.objects.all
@@ -68,7 +70,8 @@ def menu(request):
     #mes = respon.json()
     proEliminados = resp.json()
     usuarios = Usuario.objects.all()
-    contexto = {"cad": proEliminados, "usuario":usuarios}
+    inventario = Inventario.objects.all()
+    contexto = {"cad": proEliminados, "usuarios":usuarios, "inventario":inventario}
     return render(request, 'core/menu.html', contexto)
 
 # Registrar

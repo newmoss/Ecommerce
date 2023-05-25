@@ -28,7 +28,7 @@
                     {% if user.is_staff %}
                     <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
                     {% else %}
-                    <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
+                    <a style="color:white;">Bienvenid@ {{ user.first_name }} {{ user.last_name }}</a>
                     {% endif %}
             </a>
 
@@ -54,6 +54,10 @@
                         </li>
                         
                         {% else %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'home' %}">Inventario<span
+                                    class="sr-only">(current)</span></a>
+                        </li>
                         <li class="nav-item ">
                             <a class="nav-link" href="">Registrar prescripciones<span
                                     class="sr-only">(current)</span></a>
@@ -78,6 +82,8 @@
     </div>
 
     <body>
+        {% if user.is_authenticated and user.is_staff %}
+
         <div class="container" style="margin-top: 30px;">
 
             <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;"
@@ -134,6 +140,43 @@
                 </table>
             </div>
         </div>
+        {% else %}
+
+        {% for usuarios in us %}
+            {% if usuarios.email == user.username %}
+                {% for inventario in in %}
+                    {% if inventario.inventarioId_id == usuarios.inventarioId_id  %}
+                        {% for productos in producto %}
+                            {% if productos.idProducto == inventario.productoId_id  %}
+                            <div class="container" style="margin-top: 30px;">
+                                <div class="form-group table-responsive " style="margin-top: 30px;">
+                                    <table class="table table-striped">
+                                        <H1 class="centrado">Listado de inventario</H1>
+                                        <tr style="text-align: center;">
+                                            <th>Producto</th>
+                                            <th>Stock</th>
+                                            <th>Descripción</th>
+                                            <th>Precio</th>
+                                            <th>Imagen</th>
+                                        </tr>
+                                        <td>{{ productos.nombre }}</td>
+                                        <td>{{ inventario.stock }}</td>
+                                        <td>{{ productos.descripcion}}</td>
+                                        <td>{{ productos.precio }}</td>
+                                        <td><img src="{{ productos.imagen.url }}" style="width: 70px;max-width: 70px;" alt=""></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        
+        {% endif %}
+
     </body>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

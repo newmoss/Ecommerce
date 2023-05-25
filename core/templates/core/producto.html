@@ -72,14 +72,14 @@
             {% endif %}
         </nav>
     </div>
+
     <div class="container" style="margin-top: 30px;">
-        <!-- listado-->
+        <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;"
+            href="{% url 'crearProducto' %}">
+            <button class="btn btn-success"><i class="fas fa-plus"></i>+ Crear usuario</button>
+        </a>
         <div class="form-group table-responsive " style="margin-top: 30px;">
             <table class="table table-striped">
-                <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;"
-                    href="{% url 'crearProducto' %}">
-                    <button class="btn btn-success"><i class="fas fa-plus"></i>+ Crear producto</button>
-                </a>
                 <H1 class="centrado">Listado de productos</H1>
                 <tr style="text-align: center;">
                     <th>Producto</th>
