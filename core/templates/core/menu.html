@@ -77,8 +77,6 @@
         </nav>
     </div>
 
-    <img src="{% static 'grafico.png' %}" alt="Gráfico de inventario">
-
 
     <div class="container" style="margin-top: 30px;">
         <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;"
@@ -89,42 +87,24 @@
         {% if user.is_authenticated and user.is_staff %}
         <div class="form-group table-responsive " style="margin-top: 30px;">
             <table class="table table-striped">
-                <H1 class="centrado">Listado de medicamentos</H1>
-
+                <h1 class="centrado">Listado de usuarios</h1>
+            
                 <tr style="text-align: center;">
-                    <th>Codigo</th>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                    <th>Descripción</th>
-                    <th>Imagen producto</th>
-                    <th>Opciones</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Inventario ID</th>
                 </tr>
-                {% for m in hab %}
-                {% if m.stock <= 5 %} <tr style="background-color: #dc3545;">
-                    <td>{{ m.idProducto }}</td>
-                    <td>{{ m.nombre }}</td>
-                    <td>{{ m.precio}}</td>
-                    <td>{{ m.stock }}</td>
-                    <td>{{ m.descripcion}}</td>
-                    <td><img src="{{ m.imagen.url }}" style="width: 40px;max-width: 40px;" alt=""></td>
-                    <td>STOCK CRITICO</td>
-                    {% else %}
-                    <td>{{ m.idProducto }}</td>
-                    <td>{{ m.nombre }}</td>
-                    <td>{{ m.precio}}</td>
-                    <td>{{ m.stock }}</td>
-                    <td>{{ m.descripcion}}</td>
-                    <td><img src="{{ m.imagen.url }}" style="width: 70px;max-width: 70px;" alt=""></td>
-                    {% endif%}
-                    <td><a class="btn btn-danger" input style="width: 90px;border-color: black;"
-                            href="{% url 'eliminarproducto' m.idProducto %}">Eliminar</a>
-                        <br>
-                        <a class="btn btn-primary" style="margin-top: 5px; width: 90px;border-color: black;"
-                            href="{% url 'modificar_producto' m.idProducto %}">Actualizar</a>
-                        </tr>
-                        {% endfor %}
+                {% for user in usuario %}
+                <tr>
+                    <td>{{ user.nombres }}</td>
+                    <td>{{ user.apellidos }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.inventarioId_id }}</td>
+                </tr>
+                {% endfor %}
             </table>
+            
         </div>
 
 

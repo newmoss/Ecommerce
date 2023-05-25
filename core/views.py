@@ -18,48 +18,30 @@ import mpld3
 
 # Home
 def home(request):
-    #productos = Producto.objects.all()
-    #
-    #nombres = [producto.nombre for producto in productos]
-    #precios = [producto.precio for producto in productos]
-    #plt.bar(range(len(nombres)), precios)
-    #plt.xlabel('Productos')
-    #plt.ylabel('Precios')
-    #plt.title('Gráfico de precios de productos')
-    #
-    ## Establecer los nombres de los productos como etiquetas en el eje x
-    #plt.xticks(range(len(nombres)), nombres, rotation=90)
-#
-    #html_graph = mpld3.fig_to_html(plt.gcf())
+
     inv = Inventario.objects.all()
     inventario_id = request.GET.get('inventario_id')  # Obtener el ID del inventario seleccionado
-
-    # Obtener el inventario correspondiente al ID proporcionado
-    # Obtener los productos relacionados con el inventario seleccionado
     filtro = Inventario_producto.objects.filter(inventarioId_id=inventario_id)
-
     # Obtener los IDs de producto asociados al filtro
     producto_ids = filtro.values_list('productoId_id', flat=True)
-
     # Obtener los datos de producto filtrando por los IDs obtenidos
     datosproducto = Producto.objects.filter(idProducto__in=producto_ids)
-
     return render(request, 'core/home.html', {'filtro': filtro, 'inv': inv, 'producto':datosproducto})
 
 def producto(request):
-    pro = Producto.objects.all
-    contexto = {"pro": pro}
+    producto = Producto.objects.all
+    contexto = {"pro": producto}
     return render(request, 'core/producto.html', contexto)
 
 def stock(request):
-    pro = Producto.objects.all()
-    inv = Inventario.objects.all()
-    contexto = {"pro":pro,"inv":inv}
+    producto = Producto.objects.all()
+    inventario = Inventario.objects.all()
+    contexto = {"pro":producto,"inv":inventario}
     return render(request, 'core/stock.html',contexto)
 
 def tiendas(request):
-    tie = Tienda.objects.all
-    contexto = {"tie": tie}
+    tiendas = Tienda.objects.all
+    contexto = {"tie": tiendas}
     return render(request, 'core/tiendas.html', contexto)
 
 def crearProducto(request):
@@ -69,8 +51,8 @@ def crearTienda(request):
     return render(request, 'core/crearTienda.html')
 
 def crearUsuario(request):
-    inv = Inventario.objects.all()
-    return render(request, 'core/crearUsuario.html', {'inv':inv})
+    inventario = Inventario.objects.all()
+    return render(request, 'core/crearUsuario.html', {'inv':inventario})
 
 
 
@@ -78,53 +60,34 @@ def menu(request):
     #us = Prescripcion.objects.all()
     #cad = Caducar.objects.all()
     #mes = Mensajeria.objects.all()
-    hab = Producto.objects.all()
-    usu = Usuario.objects.all()
     # WEB SERVICES GET
     #response = requests.get('http://127.0.0.1:8000/api/listamed')
-    respon = requests.get('http://127.0.0.1:8000/api/listamen')
+    #respon = requests.get('http://127.0.0.1:8000/api/listamen')
     resp = requests.get('http://127.0.0.1:8000/api/listaeliminados')
-
     #hab = response.json()
-    mes = respon.json()
-    cad = resp.json()
-
-    inventario = Inventario_producto.objects.all()
-    # Procesar los datos para generar el gráfico
-    tiendas = [item.productoId_id for item in inventario]
-    stock = [item.stock for item in inventario]
-
-    # Generar el gráfico de barras
-    plt.bar(tiendas, stock)
-    plt.xlabel('Tienda')
-    plt.ylabel('Stock')
-    plt.title('Inventario de Tiendas')
-    plt.xticks(tiendas)  # Configurar etiquetas en el eje X
-
-    # Guardar el gráfico en un archivo temporal
-    plt.savefig('../grafico.png')
-
-    contexto = {"hab": hab, "cad": cad, "mes": mes, "usu":usu}
+    #mes = respon.json()
+    proEliminados = resp.json()
+    usuarios = Usuario.objects.all()
+    contexto = {"cad": proEliminados, "usuario":usuarios}
     return render(request, 'core/menu.html', contexto)
 
 # Registrar
 def registrar_usuario(request):
-    if request.method == 'POST':
-        nombre = request.POST['nombre']
-        apellido = request.POST['apellido']
-        email = request.POST['email']
-        inv = request.POST['inv']
-        passw = request.POST.get('password')
-        repassw = request.POST['confirmpassword']
+    nombre = request.POST['nombre']
+    apellido = request.POST['apellido']
+    email = request.POST['email']
+    inv = request.POST['inv']
+    passw = request.POST.get('password')
+    repassw = request.POST['confirmpassword']
 
-        user = User.objects.create_user(username=email, first_name=nombre, is_superuser=1, is_staff=0, is_active=1, email=email, password=passw)
-        user.set_password(passw)
-        usuario = Usuario.objects.create(nombres=nombre, apellidos=apellido, email=email, inventarioId_id=inv)
-
+    if passw == repassw:  # Verificar si las contraseñas son iguales
+        User.objects.create_user(username=email, first_name=nombre, is_superuser=1, is_staff=0, is_active=1, email=email, password=passw)
+        Usuario.objects.create(nombres=nombre, apellidos=apellido, email=email, inventarioId_id=inv)
         messages.success(request, 'Usuario creado exitosamente!')
         return redirect('menu')
     else:
-        return render(request, 'crearUsuario.html')
+        messages.error(request, 'Las contraseñas no coinciden.')
+        return redirect('crearUsuario')
 
 def registrar_producto(request):
     nom = request.POST['nombre']
@@ -144,12 +107,9 @@ def registrar_tienda(request):
     dire = request.POST['direccion']
 
     tienda = Tienda.objects.create(nombreTienda=nom, direccion=dire)
-    
     Inventario.objects.create(tienda=tienda, inventario=nom)
-    
     messages.success(request, f'La tienda {nom} se registró exitosamente!')
     return redirect('tiendas')
-
 
 def registrar_stock(request):
     inv = request.POST['inv']
@@ -166,16 +126,13 @@ def registrar_stock(request):
         # No existe una entrada con los mismos IDs, crear una nueva
         Inventario_producto.objects.create(stock=sto, inventarioId_id=inv, productoId_id=pro)
         messages.success(request, 'Se registró el stock existosamente!')
-
     return redirect('home')
-
-
 
 
 # Eliminar
 def motivo(request, id):
-    hab = Producto.objects.get(idProducto=id)
-    contexto = {"hab": hab, }
+    productos = Producto.objects.get(idProducto=id)
+    contexto = {"hab": productos, }
     return render(request, 'core/motivo.html', contexto)
 
 
@@ -190,7 +147,6 @@ def eliminar(request, id):
         hab.delete()
         messages.success(request, 'El medicamento ' + nom + ' fue caducado por la siguiente razón: '+mot)
         return redirect('menu')
-
 
 
 def pendiente(request, id):  # Mensajeria
@@ -240,8 +196,8 @@ def pendiente(request, id):  # Mensajeria
 # Modificar producto
 
 def modificar_producto(request, id):
-    hab = Producto.objects.get(idProducto=id)
-    contexto = {"hab": hab, }
+    productos = Producto.objects.get(idProducto=id)
+    contexto = {"hab": productos}
     return render(request, 'core/modificar_producto.html', contexto)
 
 

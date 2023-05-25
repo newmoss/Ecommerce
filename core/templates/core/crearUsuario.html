@@ -77,7 +77,7 @@
 
 
     <div class="contenedor">
-        <form method="POST" class="form" action="{% url 'registrar_usuario' %}">
+        <form action="{% url 'registrar_usuario' %}" method="POST" enctype="multipart/form-data" class="form" >
             {% csrf_token %}
             <h1>Crear una cuenta</h1>
             <span>use su correo electrónico de la institución</span>
@@ -102,7 +102,7 @@
                 </select>
             </div>
             <div class="infield">
-                <input type="password" placeholder="Contraseña" id="password" nname="password" required>
+                <input type="password" placeholder="Contraseña" id="password" name="password" required>
                 <label></label>
             </div>
             <div class="infield">

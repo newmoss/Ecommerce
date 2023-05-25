@@ -3,7 +3,7 @@
 {% load static %}
 
 <head>
-    <title>Centro de Salud Familiar</title>
+    <title>StockMaster</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -135,7 +135,21 @@
             </div>
         </div>
     </body>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    {% if messages %}
+    {% for m in messages %}
+    <script>
+        Swal.fire({
+            "title": "Stock actualizado",
+            "text": "{{m}}",
+            "icon": "success",
+            "confirmButtonColor": "#007bff",
+            "confirmButtonText": "Salir"
+        })
+    </script>
+    {% endfor %}
+    {% endif %}
 </html>
 <!--
     <div hidden class="carousel slide" data-ride="carousel" id="carouselExampleIndicators">
@@ -196,8 +210,6 @@
                 aria-hidden="true" class="carousel-control-prev-icon"></span> <span class="sr-only">Previous</span></a>
         <a class="carousel-control-next" data-slide="next" href="#carouselExampleIndicators" role="button"><span
                 aria-hidden="true" class="carousel-control-next-icon"></span> <span class="sr-only">Next</span></a>
-
-   
     </div>-->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js">
 </script>
