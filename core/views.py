@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Tienda,Producto, Motivo, Mensajeria,Inventario,Inventario_producto,Usuario
+from .models import Tienda,Producto, Motivo, Mensajeria,Inventario,Inventario_producto,Usuario,Solicitud,estadoSolicitud
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
@@ -26,9 +26,10 @@ def home(request):
     # Obtener los datos de producto filtrando por los IDs obtenidos
     datosproducto = Producto.objects.filter(idProducto__in=producto_ids)
     usuario = Usuario.objects.all()
-    invpro= Inventario_producto.objects.all()
-    producto= Producto.objects.all()
-    return render(request, 'core/home.html', {'filtro': filtro, 'inv': inv, 'producto':datosproducto,"us":usuario,"in":invpro,"producto":producto})
+    invpro = Inventario_producto.objects.all()
+    producto = Producto.objects.all()
+    selected_inventario_id = Inventario.objects.get(idInventario=inventario_id) if inventario_id else None
+    return render(request, 'core/home.html', {'selected_inventario_id': selected_inventario_id, 'filtro': filtro, 'inv': inv, 'producto': datosproducto, 'us': usuario, 'in': invpro, 'producto': producto})
 
 def producto(request):
     producto = Producto.objects.all
@@ -48,6 +49,9 @@ def tiendas(request):
 
 def crearProducto(request):
     return render(request, 'core/crearProducto.html')
+
+def responderSolicitud(request):
+    return render(request, 'core/responderSolicitud.html')
 
 def crearTienda(request):
     return render(request, 'core/crearTienda.html')
@@ -71,7 +75,9 @@ def menu(request):
     proEliminados = resp.json()
     usuarios = Usuario.objects.all()
     inventario = Inventario.objects.all()
-    contexto = {"cad": proEliminados, "usuarios":usuarios, "inventario":inventario}
+    solicitudes = Solicitud.objects.all().order_by('-fechaSolicitud') 
+    estado= estadoSolicitud.objects.all()
+    contexto = {"estado":estado,"cad": proEliminados, "usuarios":usuarios, "inventario":inventario,"sol":solicitudes}
     return render(request, 'core/menu.html', contexto)
 
 # Registrar
@@ -108,8 +114,12 @@ def registrar_producto(request):
 def registrar_tienda(request):
     nom = request.POST['nombre']
     dire = request.POST['direccion']
+    if request.FILES.get('image') == None:
+        imagen_m = 'imagenproducto.png'
+    else:
+        imagen_m = request.FILES['image']
 
-    tienda = Tienda.objects.create(nombreTienda=nom, direccion=dire)
+    tienda = Tienda.objects.create(nombreTienda=nom, direccion=dire,imagenTienda = imagen_m)
     Inventario.objects.create(tienda=tienda, inventario=nom)
     messages.success(request, f'La tienda {nom} se registró exitosamente!')
     return redirect('tiendas')
@@ -131,6 +141,15 @@ def registrar_stock(request):
         messages.success(request, 'Se registró el stock existosamente!')
     return redirect('home')
 
+def solicitarProducto(request):
+    nomPro = request.POST['producto']
+    inventario = request.POST['inventario']
+    estado = 1
+
+    Solicitud.objects.create(productoSolicitado = nomPro, estadoSol_id = estado,inventarioId_id = inventario)
+    messages.success(request, f'La solicitud de stock de {nomPro} se envio exitosamente!')
+    return redirect('home')
+
 
 # Eliminar
 def motivo(request, id):
@@ -148,7 +167,7 @@ def eliminar(request, id):
     else:
         Motivo.objects.create(codigo=hab.idProducto, productoEliminado=hab.nombre, motivo=mot)
         hab.delete()
-        messages.success(request, 'El medicamento ' + nom + ' fue caducado por la siguiente razón: '+mot)
+        messages.success(request, 'El prodcuto ' + nom + ' fue eliminado por la siguiente razón: '+mot)
         return redirect('menu')
 
 
@@ -203,7 +222,6 @@ def modificar_producto(request, id):
     contexto = {"hab": productos}
     return render(request, 'core/modificar_producto.html', contexto)
 
-
 def modificar(request):
     idisbn = request.POST['id']
     nom = request.POST['nombre']
@@ -211,18 +229,63 @@ def modificar(request):
     sto = request.POST['stock']
     des = request.POST['descripcion']
 
-    hab = Producto.objects.get(idProducto=idisbn)
-
-    hab.nombre = nom
-    hab.precio = pre
-    hab.stock = sto
-    hab.descripcion = des
-
+    producto = Producto.objects.get(idProducto=idisbn)
+    producto.nombre = nom
+    producto.precio = pre
+    producto.stock = sto
+    producto.descripcion = des
     if request.FILES.get('img') != None:
-        hab.imagen = request.FILES['img']
-    hab.save()
+        producto.imagen = request.FILES['img']
+    producto.save()
     messages.success(request, 'Producto actualizado exitosamente!')
     return redirect('menu')
+
+
+def responderSolicitud(request, id):
+    estado = Solicitud.objects.get(idSolicitud = id)
+    contexto = {"est": estado}
+    return render(request, 'core/responderSolicitud.html', contexto)
+
+def respuesta(request):
+    idSol = request.POST['idSol']
+    res = request.POST['respuesta']
+    sol = Solicitud.objects.get(idSolicitud=idSol)
+
+    sol.respuesta = res
+    sol.estadoSol_id = 2
+    sol.save()
+    messages.success(request, 'Se envio la respuesta')
+    return redirect('menu')
+
+
+def modificar_inventario(request, id):
+    inventario = Inventario_producto.objects.get(id=id)
+    contexto = {"hab": inventario}
+    return render(request, 'core/modificar_inventario.html', contexto)
+
+def modifiInventario(request):
+    idisbn = request.POST['id']
+    nom = request.POST['nombre']
+    sto = request.POST['stock']
+
+    inventario_prod = Inventario_producto.objects.get(id=idisbn)
+    inventario_prod.nombre = nom
+    inventario_prod.stock = sto
+    inventario_prod.save()
+    messages.success(request, 'Inventario actualizado exitosamente!')
+    return redirect('home')
+
+def asignarUbicacion(request):
+    idisbn = request.POST['id']
+    est = request.POST['estante']
+    comp = request.POST['compartimiento']
+
+    inventario_prod = Inventario_producto.objects.get(id=idisbn)
+    inventario_prod.estante = est
+    inventario_prod.compartimiento = comp
+    inventario_prod.save()
+    messages.success(request, 'Ubicacion actualizada exitosamente!')
+    return redirect('home')
 
 # LOGIN_________________________________________________________________________________________________
 

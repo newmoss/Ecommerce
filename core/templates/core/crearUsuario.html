@@ -13,6 +13,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- css stylesheet -->
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/newuser.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Css -->
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/estilos.css' %}">
     <!-- Boostrap -->
@@ -64,23 +65,22 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
                     </li>
-
                 </ul>
             </div>
+            {% if user.is_authenticated %}
+            <a slot="end" class="btn" href="{% url 'logout' %}" style="color:#fff; font-size: 30px;">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+            {% endif %}
         </div>
-        {% if user.is_authenticated %}
-        <a slot="end" class="btn btn-danger clogse" href="{% url 'logout' %}"
-            style="color:rgb(255, 255, 255); ; ">Cerrar
-            sesión</a>
-        {% endif %}
     </nav>
 
 
-    <div class="contenedor">
-        <form action="{% url 'registrar_usuario' %}" method="POST" enctype="multipart/form-data" class="form" >
+    <div class="contenedor" style="margin-top: 120px; margin-bottom: 100px;">
+        <form action="{% url 'registrar_usuario' %}" method="POST" enctype="multipart/form-data" class="form">
             {% csrf_token %}
             <h1>Crear una cuenta</h1>
-            <span>use su correo electrónico de la institución</span>
+            <span>use correo electrónico de la empresa</span>
             <div class="infield">
                 <input type="text" placeholder="Nombre" id="nombre" name="nombre" required>
                 <label></label>
@@ -94,8 +94,8 @@
                 <label></label>
             </div>
             <div class="control">
-                <label>Inventario:</label>
-                <select class="controls" name="inv" id="inv" required>
+                <a>Inventario:</a>
+                <select  class="btn" style="width: 140px; border-color: black;text-align: center;" name="inv" id="inv" required>
                     {% for x in inv %}
                     <option value="{{ x.idInventario }}">{{ x.inventario }}</option>
                     {% endfor %}
@@ -106,13 +106,16 @@
                 <label></label>
             </div>
             <div class="infield">
-                <input type="password" id="confirmpassword" name="confirmpassword" placeholder="Repetir Contraseña" required>
+                <input type="password" id="confirmpassword" name="confirmpassword" placeholder="Repetir Contraseña"
+                    required>
                 <label></label>
             </div>
             <button type="submit">Crear usuario</button>
         </form>
     </div>
-
+    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #000; color: white; text-align: center; height: 60px; line-height: 60px;margin-top: 50px;">
+        &copy;2023 Newmoss Solutions Inc.
+    </footer>
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

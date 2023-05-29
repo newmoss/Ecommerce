@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 {% load static %}
-
 <head>
     <title>StockMaster</title>
     <meta charset="UTF-8">
@@ -11,25 +10,23 @@
     <!-- Css -->
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/estilos.css' %}">
     <!-- Boostrap -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-        integrity="sha512-wgDh9WZ9GzA8FMZOrPj/4g9v0JFkPr3GATQf2vlnbCg9ybS/TPm2ljiMR88GfHqA5uAqFtq97JzrlaSdnqBkvg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    
 </head>
 
 <body>
-    <div>{% if user.is_authenticated %}
+    <div>
         <nav class="navbar navbar-expand-lg navbar-dark" style="background: #000;">
             <a class="navbar-brand" href="{% url 'home' %}">
                 <img style="height: 100px;width: 150px;" src="{% static 'core/img/logoHome.png' %}"
                     class="d-inline-block align-top" alt="">
-                    {% if user.is_staff %}
-                    <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
-                    {% else %}
-                    <a style="color:white;">Bienvenid@ {{ user.first_name }} {{ user.last_name }}</a>
-                    {% endif %}
+                {% if user.is_staff %}
+                <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
+                {% else %}
+                <a style="color:white;">Bienvenid@ {{ user.first_name }} {{ user.last_name }}</a>
+                {% endif %}
             </a>
 
             <div class="container">
@@ -52,130 +49,157 @@
                             <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
                                     class="sr-only">(current)</span></a>
                         </li>
-                        
+
                         {% else %}
                         <li class="nav-item active">
                             <a class="nav-link" href="{% url 'home' %}">Inventario<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link" href="">Registrar prescripciones<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
                                     class="sr-only">(current)</span></a>
                         </li>
                         {% endif %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
                         </li>
-
                     </ul>
                 </div>
+                {% if user.is_authenticated %}
+                <a slot="end" class="btn" href="{% url 'logout' %}" style="color:#fff; font-size: 30px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+                {% endif %}
             </div>
-
-            <a slot="end" class="btn btn-danger" href="{% url 'logout' %}" style="color:rgb(255, 255, 255); ; ">Cerrar
-                sesión</a>
-
-        </nav>{% endif %}
+        </nav>
     </div>
 
     <body>
         {% if user.is_authenticated and user.is_staff %}
-
         <div class="container" style="margin-top: 30px;">
-
-            <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;"
-                href="{% url 'stock' %}">
-                <button class="btn btn-success"><i class="fas fa-plus"></i>+ Añadir producto a inventario</button>
+            <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;" href="{% url 'stock' %}">
+                <button class="btn" style="color: #163A4A; text-decoration: none;"><i class="fas fa-plus"></i> Agregar producto a inventarios</button>
             </a>
-            <h1>Inventarios</h1>
-            <div>
-                <form method="GET" style="margin-right: 10px;">
-                    <label for="inventario_id">Seleccione un inventario:</label>
-                    <select name="inventario_id" id="inventario_id">
-                        <!-- Aquí puedes iterar sobre todos los inventarios disponibles y generar las opciones del menú desplegable -->
-                        {% for x in inv %}
-                        <option value="{{ x.idInventario }}">{{ x.inventario }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="submit" value="Mostrar productos">
-                </form>
-
-            </div>
+            <form method="GET" style="margin-right: 10px;">
+                <label for="inventario_id">Seleccione un inventario:</label>
+                <select class="btn" style="width: 140px; border-color: black;text-align: center;" name="inventario_id" id="inventario_id">
+                    <!-- Aquí puedes iterar sobre todos los inventarios disponibles y generar las opciones del menú desplegable -->
+                    {% for x in inv %}
+                    <option value="{{ x.idInventario }}" style="text-align: center;" {% if selected_inventario_id and selected_inventario_id.idInventario == x.idInventario %}selected{% endif %}>{{ x.inventario }}</option>
+                    {% endfor %}
+                </select>
+                <input class="btn" style="width: 180px; border-color: black;" type="submit" value="Mostrar productos">
+            </form>
         </div>
-
-
-        <!-- {% if filtro %}
-        <h2>Productos:</h2>
-        <ul>
-            Iterar sobre los productos y mostrar su información
-            {% for x in filtro %}
-                <li>Producto:{{ x.productoId.nombre }} Stock:{{ x.stock }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No hay productos disponibles para el inventario seleccionado.</p>
-    {% endif %} -->
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var selectElement = document.getElementById("inventario_id");
+                var selectedOptionValue = selectElement.value;
+        
+                // Establecer la opción seleccionada al cargar la página
+                for (var i = 0; i < selectElement.options.length; i++) {
+                    if (selectElement.options[i].value === selectedOptionValue) {
+                        selectElement.options[i].selected = true;
+                        break;
+                    }
+                }
+            });
+        </script>
+        
         <div class="container" style="margin-top: 30px;">
             <div class="form-group table-responsive " style="margin-top: 30px;">
                 <table class="table table-striped">
-                    <H1 class="centrado">Listado de inventario</H1>
+                    <h1>Listado de inventario - {{ selected_inventario_id.inventario }}</h1>
                     <tr style="text-align: center;">
                         <th>Producto</th>
                         <th>Stock</th>
                         <th>Descripción</th>
                         <th>Precio</th>
                         <th>Imagen</th>
+                        <th>Opciones</th>
                     </tr>
                     {% for x in filtro %}
-                    <td>{{ x.productoId.nombre }}</td>
-                    <td>{{ x.stock }}</td>
-                    <td>{{ x.productoId.descripcion}}</td>
-                    <td>{{ x.productoId.precio }}</td>
-                    <td><img src="{{ x.productoId.imagen.url }}" style="width: 70px;max-width: 70px;" alt=""></td>
+                    <tr>
+                        <td>{{ x.productoId.nombre }}</td>
+                        <td>{{ x.stock }}</td>
+                        <td>{{ x.productoId.descripcion }}</td>
+                        <td>${{ x.productoId.precio }}</td>
+                        <td><img src="{{ x.productoId.imagen.url }}" style="width: 70px;max-width: 70px;" alt=""></td>
+                        <td>
+                            <a class="btn" style="margin-top: 5px; width: 40px; border-color: black;" href="{% url 'modificar_inventario' x.id %}">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </table>
             </div>
         </div>
-        {% else %}
-
-        {% for usuarios in us %}
-            {% if usuarios.email == user.username %}
-                {% for inventario in in %}
-                    {% if inventario.inventarioId_id == usuarios.inventarioId_id  %}
-                        {% for productos in producto %}
-                            {% if productos.idProducto == inventario.productoId_id  %}
-                            <div class="container" style="margin-top: 30px;">
-                                <div class="form-group table-responsive " style="margin-top: 30px;">
-                                    <table class="table table-striped">
-                                        <H1 class="centrado">Listado de inventario</H1>
-                                        <tr style="text-align: center;">
-                                            <th>Producto</th>
-                                            <th>Stock</th>
-                                            <th>Descripción</th>
-                                            <th>Precio</th>
-                                            <th>Imagen</th>
-                                        </tr>
-                                        <td>{{ productos.nombre }}</td>
-                                        <td>{{ inventario.stock }}</td>
-                                        <td>{{ productos.descripcion}}</td>
-                                        <td>{{ productos.precio }}</td>
-                                        <td><img src="{{ productos.imagen.url }}" style="width: 70px;max-width: 70px;" alt=""></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
         
+        {% else %}
+        <div class="container" style="margin-top: 30px;">
+            <div class="form-group table-responsive " style="margin-top: 30px;">
+                <table class="table table-striped">
+                    <H1 class="centrado">Lista de productos</H1>
+                    <tr style="text-align: center;">
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Imagen</th>
+                        <th>Estado</th>
+                        <th>Ubicación</th>
+                    </tr>
+                    {% for usuarios in us %}
+                    {% if usuarios.email == user.username %}
+                    {% for inventario in in %}
+                    {% if inventario.inventarioId_id == usuarios.inventarioId_id %}
+                    {% for productos in producto %}
+                    {% if productos.idProducto == inventario.productoId_id %}
+                    <tr>
+                        <td>{{ productos.nombre }}</td>
+                        <td>{{ inventario.stock }}</td>
+                        <td>{{ productos.descripcion}}</td>
+                        <td>${{ productos.precio }}</td>
+                        <td><img src="{{ productos.imagen.url }}" style="width: 70px;max-width: 70px;" alt=""></td>
+                        {% if inventario.stock <= 5 %} <td>
+                            <form action="{% url 'solicitarProducto' %}" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="text" name="producto" value="{{ productos.nombre }}" hidden>
+                                <input type="text" name="inventario" value="{{ inventario.inventarioId_id }}" hidden>
+
+                                <button type="submit" class="btn"
+                                    style="margin-top: 5px; width: 150px; border-color: black;">
+                                    <i class="fa fa-exclamation-triangle"></i> Solicitar stock
+                                </button>
+                            </form>
+                            </td>
+                            {% else %}
+                            <td>Suficiente</td>
+
+                            {% endif %}
+                            {% if inventario.estante is not None and inventario.compartimiento is not None %}
+                            <td>Estante: {{ inventario.estante }} <br>Compartimiento: {{ inventario.compartimiento }}</td>
+                            {% else %}
+                            <td>
+                                <a class="btn" style="margin-top: 5px; width: 140px; border-color: black;"
+                                    href="{% url 'modificar_inventario' inventario.id %}">
+                                    <i class="fas fa-edit"></i> Asignar
+                                </a>
+                            </td>
+                            {% endif %}
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
         {% endif %}
+
+        <footer>
+            <p>&copy;2023 Newmoss Solutions Inc.</p>
+        </footer>
 
     </body>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -184,7 +208,7 @@
     {% for m in messages %}
     <script>
         Swal.fire({
-            "title": "Stock actualizado",
+            "title": "Realizado",
             "text": "{{m}}",
             "icon": "success",
             "confirmButtonColor": "#007bff",
@@ -193,6 +217,7 @@
     </script>
     {% endfor %}
     {% endif %}
+
 </html>
 <!--
     <div hidden class="carousel slide" data-ride="carousel" id="carouselExampleIndicators">

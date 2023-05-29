@@ -3,18 +3,16 @@
 {% load static %}
 
 <head>
-    <title>Registrar producto</title>
+    <title>Modificar inventario</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Css -->
     <link rel="icon" type="image/jgp" href="{% static 'core/img/Icono.png' %}" alt="Icono pestaña">
-
+    <!-- Css -->
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/style.css' %}">
     <!-- Boostrap -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
-
 </head>
 
 <body>
@@ -24,13 +22,14 @@
             <a class="navbar-brand" href="{% url 'home' %}">
                 <img style="height: 100px;width: 150px;" src="{% static 'core/img/logoHome.png' %}"
                     class="d-inline-block align-top" alt="">
-                {% if user.is_staff %}
-                <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
-                {% else %}
-                <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
-                {% endif %}
+                    {% if user.is_staff %}
+                    <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
+                    {% else %}
+                    <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
+                    {% endif %}
             </a>
 
+            
             <div class="container">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,12 +50,8 @@
                             <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
                                     class="sr-only">(current)</span></a>
                         </li>
-
+                        
                         {% else %}
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'reg_prescripcion' %}">Registrar prescripciones<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
                         <li class="nav-item ">
                             <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
                                     class="sr-only">(current)</span></a>
@@ -75,30 +70,45 @@
             </div>
         </nav>
     </div>
+
     {% if user.is_staff %}
-    <!-- Formulario -->
-
-    <form action="{% url 'registrar_producto' %}" method="POST" enctype="multipart/form-data">
+    <!-- Formulario  -->
+    <form action="{% url 'modifiInventario' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <section class="form-register ">
-            <h1 align=center>Registrar producto</h1>
+        <section class="form-register">
+            <h1 align=center>Actualizar producto</h1>
+            <input class="controls" type="text" name="id" id="id" value="{{ hab.id}}" hidden>
+            <label for="">Tienda</label>
+            <input class="controls" type="text" name="tienda" id="tienda" value="{{ hab.inventarioId }}" readonly>
 
-            <label for="">Nombre del producto:</label>
-            <input class="controls" type="text" name="nombre" id="nombre" placeholder="" required>
+            <label for="">Nombre producto</label>
+            <input class="controls" type="text" name="nombre" id="nombre" value="{{ hab.productoId }}" readonly>
 
-            <label for="">Precio del producto:</label>
-            <input class="controls" type="number" name="precio" id="precio" placeholder="" required>
-
-            <label for="">Descripción del producto:</label>
-            <input class="controls" type="text" name="descripcion" id="descripcion" placeholder="" required>
-            
-            <label for="">Imagen del producto:</label>
-            <input class="controls" type="file" name="image" id="image">
+            <label for="">Stock</label>
+            <input class="controls" type="number" name="stock" id="stock" value="{{ hab.stock }}">
 
             <div style="display: flex; justify-content: center;">
-                <input style="margin-right: 10px;" class="botons" type="reset" value="Limpiar campos">
-                <input class="botons" type="submit" value="Registrar">
+                <input class="botons" type="submit" value="Guardar">
             </div>
+        </section>
+    </form>
+    {% else %}
+    <form action="{% url 'asignarUbicacion' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <section class="form-register">
+            <h1 align=center>Asignar ubicación</h1>
+            <input class="controls" type="text" name="id" id="id" value="{{ hab.id}}" hidden>
+    
+            <label for="">Estante</label>
+            <input class="controls" type="text" name="estante" id="estante" value="{{ hab.estante }}">
+    
+            <label for="">Compartimiento</label>
+            <input class="controls" type="text" name="compartimiento" id="compartimiento" value="{{ hab.compartimiento }}">
+    
+            <div style="display: flex; justify-content: center;">
+                <input class="botons" type="submit" value="Guardar">
+            </div>
+        </section>
     </form>
     {% endif %}
 

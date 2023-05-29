@@ -12,6 +12,7 @@
     <!-- Css -->
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/estilos.css' %}">
     <!-- Boostrap -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
 
 </head>
@@ -26,7 +27,7 @@
                 {% if user.is_staff %}
                 <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
                 {% else %}
-                <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
+                <a style="color:white;">Bienvenid@ {{ user.first_name }} {{ user.last_name }}</a>
                 {% endif %}
             </a>
 
@@ -51,52 +52,48 @@
                             <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
                                     class="sr-only">(current)</span></a>
                         </li>
-
                         {% else %}
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'reg_prescripcion' %}">Registrar prescripciones<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Inventario<span
                                     class="sr-only">(current)</span></a>
                         </li>
                         {% endif %}
                         <li class="nav-item active">
                             <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
                         </li>
-
                     </ul>
                 </div>
+                {% if user.is_authenticated %}
+                <a slot="end" class="btn" href="{% url 'logout' %}" style="color:#fff; font-size: 30px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+                {% endif %}
             </div>
-            {% if user.is_authenticated %}
-            <a slot="end" class="btn btn-danger clogse" href="{% url 'logout' %}"
-                style="color:rgb(255, 255, 255); ; ">Cerrar
-                sesión</a>
-            {% endif %}
         </nav>
     </div>
 
-
+    <!-- listado-->
+    {% if user.is_authenticated and user.is_staff %}
     <div class="container" style="margin-top: 30px;">
         <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;"
             href="{% url 'crearUsuario' %}">
-            <button class="btn btn-success"><i class="fas fa-plus"></i>+ Crear usuario</button>
+            <button class="btn" style="color: #163A4A; text-decoration: none;"><i class="fa fa-user-plus"></i> Agregar
+                usuario</button>
         </a>
-        <!-- listado-->
-        {% if user.is_authenticated and user.is_staff %}
         <div class="form-group table-responsive " style="margin-top: 30px;">
             <table class="table table-striped">
-                <h1 class="centrado">Listado de usuarios</h1>
+                <h1 class="centrado">Usuarios de sucursales <i class="fa fa-users"></i></h1>
 
                 <tr style="text-align: center;">
+                    <th></th>
                     <th>Nombres</th>
                     <th>Apellidos</th>
                     <th>Email</th>
                     <th>Inventario</th>
                 </tr>
                 {% for usuario in usuarios %}
-                <tr>
+                <tr><td><i class="fa fa-id-card" aria-hidden="true"></i>
+                </td>
                     <td>{{ usuario.nombres }}</td>
                     <td>{{ usuario.apellidos }}</td>
                     <td>{{ usuario.email }}</td>
@@ -113,72 +110,194 @@
         </div>
 
         <div class="form-group table-responsive " style="margin-top: 30px;">
-            <table class="table table-striped">
-                <H1 class="centrado">Productos eliminados</H1>
+            <h1 class="centrado">Solicitudes de stock pendientes <i class="fa fa-bell"></i></h1>
 
+            <table class="table table-striped">
+                <tr style="text-align: center;">
+                    <th>Producto</th>
+                    <th>Fecha</th>
+                    <th>Tienda</th>
+                    <th>Estado</th>
+                </tr>
+                {% for x in sol %}
+                {% if x.estadoSol_id == 1 %}
+
+                <tr>
+                    <td>{{ x.productoSolicitado }}</td>
+                    <td>{{ x.fechaSolicitud }}</td>
+                    <td>
+                        {% for inv in inventario %}
+                        {% if inv.idInventario == x.inventarioId_id %}
+                        {{ inv.inventario }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for est in estado %}
+                        {% if est.idEstado == x.estadoSol_id %}
+                        {% if x.estadoSol_id == 1 %}
+                        <a class="btn" style="margin-top: 5px; width: 150px; border-color: black;"
+                            href="{% url 'responderSolicitud' x.idSolicitud %}">
+                            <i class="fa fa-envelope"></i> Finalizar
+                        </a>
+                        {% else %}
+                        {{ est.estadoSol }}
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="form-group table-responsive " style="margin-top: 30px;">
+            <table class="table table-striped">
+                <H1 class="centrado">Productos eliminados <i class="fa fa-times"></i></H1>
                 <tr style="text-align: center;">
                     <th>Codigo de producto</th>
                     <th>Nombre de producto</th>
+                    <th>Fecha</th>
                     <th>Motivo</th>
-
                 </tr>
                 {% for m in cad %}
                 <tr>
                     <td>{{ m.codigo }}</td>
                     <td>{{ m.productoEliminado }}</td>
+                    <td>{{ m.fecha }}</td>
                     <td>{{ m.motivo }}</td>
                 </tr>
                 {% endfor %}
             </table>
         </div>
 
-        {% else %}
+        <div class="form-group table-responsive " style="margin-top: 30px; margin-bottom: 100px;">
+            <h1 class="centrado">Solicitudes historicas <i class="fa fa-history"></i></h1>
 
+            <table class="table table-striped">
+                <tr style="text-align: center;">
+                    <th>Producto</th>
+                    <th>Fecha</th>
+                    <th>Tienda</th>
+                    <th>Estado</th>
+                    <th>Respuesta</th>
 
-        {% endif %}
+                </tr>
+                {% for x in sol %}
+                {% if x.estadoSol_id == 2 %}
 
-        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        {% if messages %}
-        {% for m in messages %}
-        <script>
-            Swal.fire({
-                "title": "Realizado",
-                "text": "{{m}}",
-                "icon": "success",
-                "confirmButtonColor": "#007bff",
-                "confirmButtonText": "Salir"
-            })
-        </script>
-        {% endfor %}
-        {% endif %}
+                <tr>
+                    <td>{{ x.productoSolicitado }}</td>
+                    <td>{{ x.fechaSolicitud }}</td>
+                    <td>
+                        {% for inv in inventario %}
+                        {% if inv.idInventario == x.inventarioId_id %}
+                        {{ inv.inventario }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for est in estado %}
+                        {% if est.idEstado == x.estadoSol_id %}
 
-        <script>
-            function eli(id) {
-                Swal.fire({
-                    "title": "Estas seguro?",
-                    "text": "esta accion no se puede deshacer",
-                    "icon": "question",
-                    "showCancelButton": true,
-                    "cancelButtonText": "No, Cancelar",
-                    "confirmButtonText": "Si, Eliminar",
-                    "ReverseButtons": true,
-                    "confirmButtonColor": "red"
-                })
-                    .then(function (result) {
-                        if (result.isConfirmed) {
-                            window.location.href = "/eliminare/" + id
-                            Swal.fire('Eliminado!', '', 'success')
-                        } else
-                            Swal.fire('No se elimino!', '', 'error')
-                    })
-            }
-        </script>
-        <ul>
-            {% for medi in medi %}
-            <li> {{ medi.nombre }}</li>
-            {% endfor %}
-        </ul>
+                        {{ est.estadoSol }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ x.respuesta }}</td>
+                </tr>
+                {% endif %}
+
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="container" style="margin-top: 30px;">
+        <div class="form-group table-responsive " style="margin-top: 30px;">
+            <h1 class="centrado">Solicitudes de stock <i class="fa fa-history"></i></h1>
+            <table class="table table-striped">
+                <tr style="text-align: center;">
+                    <th>Producto</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Respuesta</th>
+                </tr>
+                {% for usuario in usuarios %}
+                {% if user.username == usuario.email %}
+                {% for x in sol %}
+                    {% if x.inventarioId_id == usuario.inventarioId_id %}
+                        <tr>
+                            <td>{{ x.productoSolicitado }}</td>
+                            <td>{{ x.fechaSolicitud }}</td>
+                            <td>
+                                {% for est in estado %}
+                                    {% if est.idEstado == x.estadoSol_id %}
+                                        {{ est.estadoSol }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ x.respuesta }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                {% endif %}
+
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+
+    {% endif %}
+    <footer >
+        &copy;2023 Newmoss Solutions Inc.
+    </footer>
 </body>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% if messages %}
+{% for m in messages %}
+<script>
+    Swal.fire({
+        "title": "Realizado",
+        "text": "{{m}}",
+        "icon": "success",
+        "confirmButtonColor": "#007bff",
+        "confirmButtonText": "Salir"
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    function eli(id) {
+        Swal.fire({
+            "title": "Estas seguro?",
+            "text": "esta accion no se puede deshacer",
+            "icon": "question",
+            "showCancelButton": true,
+            "cancelButtonText": "No, Cancelar",
+            "confirmButtonText": "Si, Eliminar",
+            "ReverseButtons": true,
+            "confirmButtonColor": "red"
+        })
+            .then(function (result) {
+                if (result.isConfirmed) {
+                    window.location.href = "/eliminare/" + id
+                    Swal.fire('Eliminado!', '', 'success')
+                } else
+                    Swal.fire('No se elimino!', '', 'error')
+            })
+    }
+</script>
+<ul>
+    {% for medi in medi %}
+    <li> {{ medi.nombre }}</li>
+    {% endfor %}
+</ul>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
     crossorigin="anonymous"></script>
