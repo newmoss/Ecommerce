@@ -9,7 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Css -->
     <link rel="icon" type="image/jgp" href="{% static 'core/img/Icono.png' %}" alt="Icono pestaña">
-
     <link type="text/css" rel="stylesheet" href="{% static 'core/css/style.css' %}">
     <!-- Boostrap -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -18,67 +17,56 @@
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #000;">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <img style="height: 100px;width: 150px;" src="{% static 'core/img/logoHome.png' %}"
+                class="d-inline-block align-top" alt="">
+            {% if user.is_staff %}
+            <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
+            {% else %}
+            <a style="color:white;">Bienvenid@ {{ user.first_name }} {{ user.last_name }}</a>
+            {% endif %}
+        </a>
 
-    <div>
-        <nav class="navbar navbar-expand-lg navbar-dark" style="background: #000;">
-            <a class="navbar-brand" href="{% url 'home' %}">
-                <img style="height: 100px;width: 150px;" src="{% static 'core/img/logoHome.png' %}"
-                    class="d-inline-block align-top" alt="">
-                {% if user.is_staff %}
-                <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
-                {% else %}
-                <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
-                {% endif %}
-            </a>
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav nav">
+                    {% if user.is_authenticated and user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Inventarios<span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'producto' %}">Productos<span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
+                                class="sr-only">(current)</span></a>
+                    </li>
 
-            <div class="container">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                    <ul class="navbar-nav nav">
-                        {% if user.is_authenticated and user.is_staff %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Inventarios<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'producto' %}">Productos<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-
-                        {% else %}
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'home' %}">Inventarios<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item active">
-                            <a class="nav-link" href="">Registrar prescripciones<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
-                        </li>
-                    </ul>
-                </div>
-                {% if user.is_authenticated %}
-                <a slot="end" class="btn" href="{% url 'logout' %}" style="color:#fff; font-size: 30px;">
-                    <i class="fas fa-sign-out-alt"></i>
-                </a>
-                {% endif %}
+                    {% else %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'home' %}">Inventario<span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
             </div>
-        </nav>
-    </div>
+            {% if user.is_authenticated %}
+            <a slot="end" class="btn" href="{% url 'logout' %}" style="color:#fff; font-size: 30px;">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+            {% endif %}
+        </div>
+    </nav>
     {% if user.is_authenticated %}
     <!-- Formulario -->
     <form action="{% url 'respuesta' %}" method="POST" enctype="multipart/form-data">
@@ -97,5 +85,20 @@
     {% endif %}
 
 </body>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+{% if messages %}
+{% for m in messages %}
+<script type="">
+    var alertData = {{ m| safe }};
+    Swal.fire({
+        title: alertData.title,
+        text: alertData.text,
+        icon: alertData.icon,
+        confirmButtonColor: "#007bff",
+        confirmButtonText: "Salir"
+    });
+</script>
+{% endfor %}
+{% endif %}
 </html>

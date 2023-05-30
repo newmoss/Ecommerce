@@ -76,7 +76,6 @@
             </div>
         </div>
     </div>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- js code -->
     <script>
@@ -93,20 +92,23 @@
             })
         });
     </script>
+
+</body>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     {% if messages %}
     {% for m in messages %}
-    <script>
+    <script type="">
+        var alertData = {{ m| safe }};
         Swal.fire({
-            "title": "Error",
-            "text": "{{m}}",
-            "icon": "error",
-            "confirmButtonColor": "#007bff",
-            "confirmButtonText": "Salir"
-        })
+            title: alertData.title,
+            text: alertData.text,
+            icon: alertData.icon,
+            confirmButtonColor: "#007bff",
+            confirmButtonText: "Salir"
+        });
     </script>
     {% endfor %}
     {% endif %}
-</body>
-
 </html>
 

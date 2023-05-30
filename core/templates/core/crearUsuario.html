@@ -28,10 +28,9 @@
             {% if user.is_staff %}
             <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
             {% else %}
-            <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
+            <a style="color:white;">Bienvenid@ {{ user.first_name }} {{ user.last_name }}</a>
             {% endif %}
         </a>
-
 
         <div class="container">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
@@ -45,21 +44,19 @@
                         <a class="nav-link" href="{% url 'home' %}">Inventarios<span
                                 class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item ">
                         <a class="nav-link" href="{% url 'producto' %}">Productos<span
                                 class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span class="sr-only">(current)</span></a>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
+                                class="sr-only">(current)</span></a>
                     </li>
 
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'reg_prescripcion' %}">Registrar prescripciones<span
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'home' %}">Inventario<span
                                 class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span class="sr-only">(current)</span></a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
@@ -95,7 +92,8 @@
             </div>
             <div class="control">
                 <a>Inventario:</a>
-                <select  class="btn" style="width: 140px; border-color: black;text-align: center;" name="inv" id="inv" required>
+                <select class="btn" style="width: 140px; border-color: black;text-align: center;" name="inv" id="inv"
+                    required>
                     {% for x in inv %}
                     <option value="{{ x.idInventario }}">{{ x.inventario }}</option>
                     {% endfor %}
@@ -113,11 +111,11 @@
             <button type="submit">Crear usuario</button>
         </form>
     </div>
-    <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #000; color: white; text-align: center; height: 60px; line-height: 60px;margin-top: 50px;">
+    <footer
+        style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #000; color: white; text-align: center; height: 60px; line-height: 60px;margin-top: 50px;">
         &copy;2023 Newmoss Solutions Inc.
     </footer>
 
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- js code -->
     <script>
@@ -134,16 +132,19 @@
             })
         });
     </script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     {% if messages %}
     {% for m in messages %}
-    <script>
+    <script type="">
+        var alertData = {{ m| safe }};
         Swal.fire({
-            "title": "Cuenta creada",
-            "text": "{{m}}",
-            "icon": "info",
-            "confirmButtonColor": "#007bff",
-            "confirmButtonText": "Salir"
-        })
+            title: alertData.title,
+            text: alertData.text,
+            icon: alertData.icon,
+            confirmButtonColor: "#007bff",
+            confirmButtonText: "Salir"
+        });
     </script>
     {% endfor %}
     {% endif %}
