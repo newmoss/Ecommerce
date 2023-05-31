@@ -7,6 +7,7 @@ from django.template.loader import get_template
 from django.conf import settings
 from django.contrib.auth.models import User
 import requests
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -27,6 +28,7 @@ def home(request):
 
 def producto(request):
     producto = Producto.objects.all
+    
     contexto = {"pro": producto}
     return render(request, 'core/producto.html', contexto)
 
