@@ -8,6 +8,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 import requests
 from django.core.paginator import Paginator
+from django.db.models.query_utils import Q
+
 
 # Create your views here.
 
@@ -27,9 +29,16 @@ def home(request):
     return render(request, 'core/home.html', {'selected_inventario_id': selected_inventario_id, 'filtro': filtro, 'inv': inv, 'producto': datosproducto, 'us': usuario, 'in': invpro, 'producto': producto})
 
 def producto(request):
-    producto = Producto.objects.all
-    
-    contexto = {"pro": producto}
+    queryset = request.GET.get("search")
+    productos = Producto.objects.all()
+    if queryset:
+        productos = productos.filter(
+            Q(nombre__icontains=queryset)
+        ).distinct()  # Filtrar productos por nombreProducto
+    else:
+        productos = Producto.objects.all()
+
+    contexto = {"pro": productos}
     return render(request, 'core/producto.html', contexto)
 
 def stock(request):

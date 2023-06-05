@@ -44,14 +44,12 @@
                                 class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item ">
-                        <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
-                                class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span class="sr-only">(current)</span></a>
                     </li>
 
                     {% else %}
                     <li class="nav-item active">
-                        <a class="nav-link" href="{% url 'home' %}">Inventario<span
-                                class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{% url 'home' %}">Inventario<span class="sr-only">(current)</span></a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
@@ -68,9 +66,23 @@
     </nav>
 
     <div class="container" style="margin-top: 30px;">
+        <div class="row">
+            <div class="col-md-12 search">
+                <form id="form" method="get" class="form d-flex">
+                    <div id="custom-search-input">
+                        <input type="text" class="form-control" style="width: 590px; border-color: black; " id="search"
+                            placeholder="Buscar..." minlength="2" id="search" name="search" requeride />
+                    </div>
+                    <button type="submit"class="btn" style="width: 180px; border-color: black; margin-left: 10px ; " ><i
+                            class="fa fa-search"></i>
+                        Buscar</button>
+                </form>
+            </div>
+        </div>
         <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;"
             href="{% url 'crearProducto' %}">
-            <button class="btn" style="color: #163A4A; text-decoration: none;"><i class="fas fa-plus"></i> Agregar producto</button>
+            <button class="btn" style="color: #163A4A; text-decoration: none;"><i class="fas fa-plus"></i> Agregar
+                producto</button>
         </a>
         <div class="form-group table-responsive " style="margin-top: 30px;">
             <table class="table table-striped">
