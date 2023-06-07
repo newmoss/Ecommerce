@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 
 #Views
-from .views import home, stock, producto, tiendas,asignarUbicacion,modifiInventario,modificar_inventario, respuesta, responderSolicitud,crearProducto, solicitarProducto ,crearTienda, crearUsuario, menu, eliminar, motivo, proveedor, modificar_producto, registrar_producto, registrar_tienda, registrar_stock, modificar, registrar_usuario
+from .views import home, stock, producto, menuSolicitud,tiendas,asignarUbicacion,modifiInventario,modificar_inventario, respuesta, responderSolicitud,crearProducto, solicitarProducto ,crearTienda, crearUsuario, menu, eliminar, motivo, proveedor, modificar_producto, registrar_producto, registrar_tienda, registrar_stock, modificar, registrar_usuario
 from .views import login_view, logout_view
 
 urlpatterns = [
@@ -19,6 +19,7 @@ urlpatterns = [
     path('producto', login_required(producto), name='producto'),
     path('tiendas', login_required(tiendas), name='tiendas'),
     path('menu', login_required(menu), name='menu'),
+    path('menuSolicitud', login_required(menuSolicitud), name='menuSolicitud'),
 
     #formularios registros.
     path('responderSolicitud', login_required(responderSolicitud), name='responderSolicitud'),

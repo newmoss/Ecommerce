@@ -22,14 +22,16 @@
     <div>
         <nav class="navbar navbar-expand-lg navbar-dark" style="background: #000;">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <img style="height: 100px;width: 150px;" src="{% static 'core/img/logoHome.png' %}" class="d-inline-block align-top" alt="">
+                <img style="height: 100px;width: 150px;" src="{% static 'core/img/logoHome.png' %}"
+                    class="d-inline-block align-top" alt="">
                 {% if user.is_staff %}
                 <a style="color:white;">Administrador: {{ user.first_name }} {{ user.last_name }}</a>
                 {% else %}
-                <a style="color:white;">Usuario: {{ user.first_name }} {{ user.last_name }}</a>
+                <a style="color:white;">Bienvenid@ {{ user.first_name }} {{ user.last_name }}</a>
                 {% endif %}
             </a>
-        
+
+
             <div class="container">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,36 +41,25 @@
                     <ul class="navbar-nav nav">
                         {% if user.is_authenticated and user.is_staff %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Inventarios<span class="sr-only">(current)</span></a>
+                            <a class="nav-link" href="{% url 'home' %}">Inventarios<span
+                                    class="sr-only">(current)</span></a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'producto' %}">Productos<span class="sr-only">(current)</span></a>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'producto' %}">Productos<span
+                                    class="sr-only">(current)</span></a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Menu
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="{% url 'menuSolicitud' %}">Solicitudes</a></li>
-                                <li><a class="dropdown-item" href="#">Usuarios</a></li>
-                                <li><a class="dropdown-item" href="#">Productos eliminados</a></li>
-                            </ul>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span
+                                    class="sr-only">(current)</span></a>
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'reg_prescripcion' %}">Registrar prescripciones<span
+                            <a class="nav-link" href="{% url 'home' %}">Inventario<span
                                     class="sr-only">(current)</span></a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'tiendas' %}">Tiendas<span class="sr-only">(current)</span></a>
-                        </li>
                         {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'menu' %}">Menú<span class="sr-only">(current)</span></a>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{% url 'menu' %}">Menu <span class="sr-only">(current)</span></a>
                         </li>
                     </ul>
                 </div>
@@ -79,45 +70,11 @@
                 {% endif %}
             </div>
         </nav>
-        
     </div>
 
     <!-- listado-->
     {% if user.is_authenticated and user.is_staff %}
     <div class="container" style="margin-top: 30px;">
-        <a style="margin: 20px 20px;display: flex; justify-content: flex-end; align-items: center;"
-            href="{% url 'crearUsuario' %}">
-            <button class="btn" style="color: #163A4A; text-decoration: none;"><i class="fa fa-user-plus"></i> Agregar
-                usuario</button>
-        </a>
-        <div class="form-group table-responsive " style="margin-top: 30px;">
-            <table class="table table-striped">
-                <h1 class="centrado">Usuarios de sucursales <i class="fa fa-users"></i></h1>
-
-                <tr style="text-align: center;">
-                    <th></th>
-                    <th>Nombres</th>
-                    <th>Apellidos</th>
-                    <th>Email</th>
-                    <th>Inventario</th>
-                </tr>
-                {% for usuario in usuarios %}
-                <tr><td><i class="fa fa-id-card" aria-hidden="true"></i>
-                </td>
-                    <td>{{ usuario.nombres }}</td>
-                    <td>{{ usuario.apellidos }}</td>
-                    <td>{{ usuario.email }}</td>
-                    <td>
-                        {% for inv in inventario %}
-                        {% if inv.idInventario == usuario.inventarioId_id %}
-                        {{ inv.inventario }}
-                        {% endif %}
-                        {% endfor %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
 
         <div class="form-group table-responsive " style="margin-top: 30px;">
             <h1 class="centrado">Solicitudes de stock pendientes <i class="fa fa-bell"></i></h1>
@@ -162,25 +119,7 @@
             </table>
         </div>
 
-        <div class="form-group table-responsive " style="margin-top: 30px;">
-            <table class="table table-striped">
-                <H1 class="centrado">Productos eliminados <i class="fa fa-times"></i></H1>
-                <tr style="text-align: center;">
-                    <th>Codigo de producto</th>
-                    <th>Nombre de producto</th>
-                    <th>Fecha</th>
-                    <th>Motivo</th>
-                </tr>
-                {% for m in cad %}
-                <tr>
-                    <td>{{ m.codigo }}</td>
-                    <td>{{ m.productoEliminado }}</td>
-                    <td>{{ m.fecha }}</td>
-                    <td>{{ m.motivo }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+
 
         <div class="form-group table-responsive " style="margin-top: 30px; margin-bottom: 100px;">
             <h1 class="centrado">Solicitudes historicas <i class="fa fa-history"></i></h1>

@@ -80,6 +80,12 @@ def menu(request):
     contexto = {"estado":estado,"cad": productosEliminados, "usuarios":usuarios, "inventario":inventario,"sol":solicitudes}
     return render(request, 'core/menu.html', contexto)
 
+def menuSolicitud(request):
+    inventario = Inventario.objects.all()
+    solicitudes = Solicitud.objects.all().order_by('-fechaSolicitud') 
+    estado= estadoSolicitud.objects.all()
+    contexto = {"estado":estado, "inventario":inventario,"sol":solicitudes}
+    return render(request, 'core/menuSolicitud.html', contexto)
 # Registrar los datos en BD
 def registrar_usuario(request):
     nombre = request.POST['nombre']
